@@ -20,3 +20,4 @@ EXPOSE 8000
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 # Week 08 CI demo: making a small change in code to trigger the pipeline
+# Redeploy for Week 09 monitoring task"
