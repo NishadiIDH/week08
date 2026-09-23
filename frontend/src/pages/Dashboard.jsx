@@ -201,6 +201,9 @@ const Dashboard = () => {
         <Typography color="text.secondary">
           Welcome to KoalaTech University
         </Typography>
+        <Typography color="text.secondary" sx={{ mt: 1 }}>
+          Your one-stop platform for managing students, lecturers, courses and enrolments.
+        </Typography>
       </Box>
 
       <Grid container spacing={3}>
