@@ -1,0 +1,59 @@
+name: 05 - Infrastructure (Terraform)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".github/workflows/05-infrastructure.yml"
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: Terraform validate and plan
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set subscription ID for Terraform
+        working-directory: .
+        run: |
+          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Create CI variable file
+        run: |
+          cat > ci.auto.tfvars <<'EOF'
+          location             = "Australia East"
+          resource_group_name  = "koalatech-week08-rg"
+          acr_name             = "nishadiacr08"
+          storage_account_name = "nishadistorage08"
+          aks_cluster_name     = "nishadi-aks-week08"
+          aks_dns_prefix       = "koalatech"
+          aks_node_count       = 3
+          aks_node_vm_size     = "Standard_D2s_v3"
+          environment          = "development"
+          EOF
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -input=false
